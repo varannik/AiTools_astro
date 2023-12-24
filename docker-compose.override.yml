@@ -1,0 +1,51 @@
+version: "3.1"
+services:
+  scheduler:
+    volumes:
+      - ./dbt:/usr/local/airflow/dbt:rw
+    networks:
+      - Ex_V1
+      - default
+
+  webserver:
+    volumes:
+      - ./dbt:/usr/local/airflow/dbt:rw
+    networks:
+      - Ex_V1
+      - default
+
+  triggerer:
+    volumes:
+      - ./dbt:/usr/local/airflow/dbt:rw
+    networks:
+      - default
+      - Ex_V1
+
+  postgres:
+    ports:
+      - 56713:5432
+    networks:
+      - default
+
+  db:
+    image: postgres:16.1-alpine3.18
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=aitools
+      - POSTGRES_USER=varanik
+      - POSTGRES_PASSWORD=Wsxokn2190
+    ports:
+      - 56714:5432
+    networks:
+      - default
+      - Ex_V1
+
+
+networks:
+  Ex_V1:
+    name: V1
+    external: true
+
+volumes:
+  dev-db-data:
