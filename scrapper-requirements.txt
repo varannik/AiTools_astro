@@ -1,0 +1,8 @@
+beautifulsoup4
+lxml
+numpy
+openpyxl
+pandas
+psycopg2
+selenium
+apache-airflow

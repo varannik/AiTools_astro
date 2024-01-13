@@ -1,0 +1,16 @@
+
+seeds:
+  - name: ref_aitoolhunt_allAis
+    description: All Ais exist in AiToolHunt
+    docs:
+      show: true
+    config:
+      enabled: true
+      schema: RAW
+
+    columns:
+      - name: cat
+        description: categories
+      - name: internal_url
+        description: Internal Url inside the AiToolhunt for specific Ai
+

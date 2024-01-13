@@ -3,6 +3,8 @@ services:
   scheduler:
     volumes:
       - ./dbt:/usr/local/airflow/dbt:rw
+    environment:
+      - PYTHONPATH=/usr/local/airflow/plugins/modules
     networks:
       - Ex_V1
       - default
@@ -10,6 +12,8 @@ services:
   webserver:
     volumes:
       - ./dbt:/usr/local/airflow/dbt:rw
+    environment:
+      - PYTHONPATH=/usr/local/airflow/plugins/modules
     networks:
       - Ex_V1
       - default
@@ -17,13 +21,15 @@ services:
   triggerer:
     volumes:
       - ./dbt:/usr/local/airflow/dbt:rw
+    environment:
+      - PYTHONPATH=/usr/local/airflow/plugins/modules
     networks:
       - default
       - Ex_V1
 
   postgres:
     ports:
-      - 56713:5432
+      - 56715:5432
     networks:
       - default
 

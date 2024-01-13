@@ -1,4 +1,5 @@
 import json
+import sys
 from pendulum import datetime
 
 from airflow.decorators import (
@@ -36,6 +37,9 @@ def example_dag_basic():
 
     @task()
     def extract():
+        print("---------------")
+        print(sys.path)
+        print("---------------")
         """
         #### Extract task
         A simple "extract" task to get data ready for the rest of the
