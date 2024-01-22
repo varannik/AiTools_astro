@@ -31,7 +31,6 @@ def insertData(cnn, df, table):
   cur = cnn.cursor()
   # Create a list of tupples from the dataframe values
   tuples = [tuple(x) for x in df.to_numpy()]
-  print(tuples)
   # Comma-separated dataframe columns
   cols = ','.join(list(df.columns))
   query  = "INSERT INTO %s(%s) VALUES %%s" % (table, cols)
@@ -64,3 +63,15 @@ def fetchData(cnn, tableName , columns):
   return df
 
 
+@db_connector
+def exeSql(cnn, sql , command):
+  '''Execute sql against db'''
+
+  cur = cnn.cursor()
+
+  print(f"eExecuting sql")
+  print("--------------")
+  print(f"{command}")
+  cur.execute(sql)
+  print("--------------")
+  print("Done.")

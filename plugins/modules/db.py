@@ -32,17 +32,10 @@ def db_connector(func):
 
         conn = None
         # read connection parameters
-        # params = config()
+        params = config()
         try:
             print('Connecting to the db...')
-
-            conn = psycopg2.connect(
-                                    host="172.19.0.2",
-                                    database="aitools",
-                                    user="varanik",
-                                    password="Wsxokn2190",
-                                    port=5432)
-            # conn = psycopg2.connect(**params)
+            conn = psycopg2.connect(**params)
             rv = func(conn, *args,**kwargs)
 
         except (Exception, psycopg2.DatabaseError) as error:

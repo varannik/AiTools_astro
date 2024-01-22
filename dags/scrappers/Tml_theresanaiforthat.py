@@ -1,25 +1,26 @@
 from pendulum import datetime
 from airflow.models.dagrun import DagRun
+
 from airflow.decorators import (
     dag,
     task,
 )
+# A function that sets sequential dependencies between tasks including lists of tasks
+from airflow.models.baseoperator import chain
 
 import pandas as pd
 
-
-# When using the DAG decorator, The "dag_id" value defaults to the name of the function
-# it is decorating if not explicitly set. In this example, the "dag_id" value would be "example_dag_basic".
 @dag(
     # This defines how often your DAG will run, or the schedule by which your DAG runs. In this case, this DAG
     # will run daily
-    schedule="@daily",
+    # schedule="@daily",
     # This DAG is set to run for the first time on January 1, 2023. Best practice is to use a static
     # start_date. Subsequent DAG runs are instantiated based on the schedule
     start_date=datetime(2023, 1, 1),
     # When catchup=False, your DAG will only run the latest run that would have been scheduled. In this case, this means
     # that tasks will not be run between January 1, 2023 and 30 mins ago. When turned on, this DAG's first
     # run will be for the next 30 mins, per the its schedule
+    schedule_interval='0 2 * * *',
     catchup=False,
     default_args={
         "retries": 2,  # If a task fails, it will retry 2 times.
@@ -28,11 +29,13 @@ import pandas as pd
 )  # If set, this tag is shown in the DAG view of the Airflow UI
 
 
-def Frn_futuretools():
+def Tml_theresanaiforthat():
     """
-    Extract Data from AiToolHunt as a refrence
+    Extract Data from timeline of Theresanaiforthat as a refrence
     """
 
+
+    # @task.external_python(task_id="aitoolhunt_tabels", python=PATH_TO_PYTHON_BINARY)
     @task()
     def initTables():
         from modules.dbExecute import cretaTables
@@ -43,16 +46,16 @@ def Frn_futuretools():
         """
         tables = {
 
-          "ref_futuretools_allAis":
+          "ref_theresanaiforthat_timeline":
 
           """
-          pageUrl VARCHAR(255),
-          screenshotUrl VARCHAR(320),
-          shortDes VARCHAR(1000),
-          name VARCHAR(255),
-          priveUrl VARCHAR(255),
-          insertDate timestamp,
-          removeDate timestamp
+          name          VARCHAR(255),
+          task          VARCHAR(255),
+          url_internal  VARCHAR(255),
+          url_ai        VARCHAR(255),
+          rel_date      timestamp,
+          insert_date   timestamp,
+          delete_date   timestamp
 
           """,
 
@@ -61,31 +64,33 @@ def Frn_futuretools():
         cretaTables(tables)
 
 
-    # @task.external_python(task_id="aitoolhunt_allais", python=PATH_TO_PYTHON_BINARY)
     @task()
     def extractAllAis():
         """
         Extract all Ais inside each category
         """
-        from modules.refFuturetools import scroll_down_to_load
+        from modules.refTheresanaiforthat import fullAis
         from modules.driver import createDriver
 
         # Open target site and
-        URL_TARGET='https://www.futuretools.io'
-        URL_SELENIUM="http://172.19.0.9:4444/wd/hub" # chrome-1
+        URL_TARGET='https://theresanaiforthat.com/timeline/'
+        URL_SELENIUM="http://172.19.0.6:4444/wd/hub"
 
         driver = createDriver(URL_TARGET, URL_SELENIUM)
-        Ais = scroll_down_to_load(driver)
 
+        Ais = fullAis(driver)
+
+        driver.quit()
 
         return Ais
 
+
     @task()
-    def fetchData():
+    def fetchExistingAis():
         """Fetch existing stored Ais"""
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_futuretools_allAis"', columns =['name', 'priveUrl'])
+        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_timeline"', columns =['name', 'url_internal'])
 
         return result
 
@@ -97,23 +102,28 @@ def Frn_futuretools():
         if len(ex)==0:
             pass
         else :
-            df = df[~df['priveUrl'].isin(ex['priveUrl'] )]
+            df = df[~df['url_internal'].isin(ex['url_internal'] )]
         return df
 
+
     @task()
-    def loadData (df, table='"DW_RAW"."ref_futuretools_allAis"' ,dag_run: DagRun | None = None ):
+    def loadData (df, table='"DW_RAW"."ref_theresanaiforthat_timeline"' ,dag_run: DagRun | None = None ):
         from modules.dbExecute import insertData
 
-        df['insertDate'] = dag_run.queued_at
+        print(f"{len(df)} rows ready to import at {dag_run.queued_at}")
+
+        df['insert_date'] = dag_run.queued_at
         insertData(df, table,)
 
     int = initTables()
     Ais = extractAllAis()
-    ex = fetchData()
-    newAis = findNewAis(Ais, ex)
-    ld = loadData(df= newAis)
-    int>>Ais>>ex>>newAis>>ld
+    ex = fetchExistingAis()
+    ne = findNewAis(Ais, ex)
+    ld = loadData(df= ne)
+    # Ais = pd.read_excel('/usr/local/airflow/plugins/modules/fullais.xlsx', index_col=None)
+    # loadData(df= Ais, table='"DW_RAW"."ref_aitoolhunt_allAis"')
+    # initTables >> extractAllAis >> loadData
+    int>>Ais>>ex>>ne>>ld
 
-
-Frn_futuretools()
+Tml_theresanaiforthat()
 

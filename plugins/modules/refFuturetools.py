@@ -41,7 +41,6 @@ def topLevelDet(el):
 def allAis(driver):
 
   # Parse the HTML using Beautiful Soup
-
   soup = soupParser(driver)
 
   allAis = soup.find_all("div",  class_=re.compile("tool-item-columns-new | w-row") )
@@ -68,9 +67,7 @@ def scroll_down_to_load(driver):
 
 
     while True:
-
       # Scroll down to the bottom.
-      # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
       driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 
@@ -79,22 +76,22 @@ def scroll_down_to_load(driver):
       print("Count element found", len(count))
 
 
+      if len(count) < 2000:
+        driver.execute_script("window.scrollTo(0, 0);")
+      else:
+        # Calculate new scroll height and compare with last scroll height.
+        new_height = driver.execute_script("return document.body.scrollHeight")
 
-      # Calculate new scroll height and compare with last scroll height.
-      new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            print("waiting loop")
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight - 1300);")
+            # Wait to load the page.
+            time.sleep(10)
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+              break
 
-      if new_height == last_height:
-          print("waiting loop")
-          driver.execute_script("window.scrollTo(0, document.body.scrollHeight - 1300);")
-          time.sleep(2)
-          driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-          # Wait to load the page.
-          time.sleep(10)
-          new_height = driver.execute_script("return document.body.scrollHeight")
-          if new_height == last_height:
-            break
-
-      last_height = new_height
+        last_height = new_height
 
     return allAis(driver)
 

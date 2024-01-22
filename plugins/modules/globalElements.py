@@ -7,7 +7,9 @@ import time
 import pandas as pd
 import os
 
-path = f'{os.getcwd()}/plugins/modules/screenshots'
+path = f'{os.getcwd()}/screenshots'
+
+
 
 if os.path.isdir(path):
     os.chdir(path)

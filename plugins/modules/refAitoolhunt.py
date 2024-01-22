@@ -11,7 +11,7 @@ def soupParser(driver):
 
   return soup
 
-def createCatUrl(cat , baseUrl):
+def createCatUrl(baseUrl, cat):
   '''Return category url'''
 
   catUrl = [baseUrl, "/?category=",cat.replace(' ','-')]
@@ -40,7 +40,7 @@ def allAvailableAi(driver, cat, baseUrl):
   columns = ['cat', 'url_internal']
   ais = pd.DataFrame(columns=columns)
 
-  url = createCatUrl(cat, baseUrl)
+  url = createCatUrl(baseUrl, cat)
 
   driver.get(url)
   time.sleep(5)
@@ -60,7 +60,8 @@ def allAvailableAi(driver, cat, baseUrl):
 
 
 def fullAis(driver, categories, URL_TARGET):
-  '''Find all Ais in all existing categories and export as excel file'''
+  '''Find all Ais in all existing categories'''
+
   columns = ['cat', 'url_internal']
   fullais = pd.DataFrame(columns=columns)
 
@@ -74,9 +75,7 @@ def fullAis(driver, categories, URL_TARGET):
   return fullais
 
 
-
 #----------------- Private page extraction modules
-
 def extractDescTable(soup):
   '''Extract all information data in table'''
     # Find the table containing the exchange rate data
@@ -239,76 +238,52 @@ def extractScreenShotUrl(soup, URL_TARGET):
 
 
 
-def aiFeatures (driver, URL_TARGET, ais):
-  '''Gather all information of an Ai in a private page of AitooHunt'''
-  # columns = [
-  #   'pricing',
-  #   'semrush_rank',
-  #   'location',
-  #   'tech_used',
-  #   'features',
-  #   'use_cases',
-  #   'cat',
-  #   'url_internal',
-  #   'url_ai',
-  #   'description',
-  #   'year',
-  #   'likes',
-  #   'name',
-  #   'tags',
-  #   'url_screen_shot',
-  #   'insert_date',
-  #   'delete_date',
-  # ]
-  details = pd.DataFrame()
-  for index, row in ais.iterrows():
+def aiFeatures (driver, URL_TARGET, ai):
+    '''Gather all information of an Ai in a private page of AitooHunt'''
 
-        print(row['url_internal'])
+    print(ai['url_internal'])
 
-        aiPrivateUrl = [URL_TARGET,row['url_internal']]
-        aiPrivateUrl = ''.join(aiPrivateUrl)
+    aiPrivateUrl = [URL_TARGET,ai['url_internal']]
+    aiPrivateUrl = ''.join(aiPrivateUrl)
 
-        driver.get(aiPrivateUrl)
-        time.sleep(3)
-        soup = soupParser(driver)
+    driver.get(aiPrivateUrl)
+    time.sleep(3)
+    soup = soupParser(driver)
 
-        url = pureURL(soup)
-        description = extractShortDescription (soup)
-        det = extractDescTable(soup)
-        year = realeaseYear(soup)
-        like = extractLike(soup)
-        name = extractName(soup)
-        tags = extractTags(soup)
-        ssUrl = extractScreenShotUrl(soup, URL_TARGET)
+    url = pureURL(soup)
+    description = extractShortDescription (soup)
+    det = extractDescTable(soup)
+    year = realeaseYear(soup)
+    like = extractLike(soup)
+    name = extractName(soup)
+    tags = extractTags(soup)
+    ssUrl = extractScreenShotUrl(soup, URL_TARGET)
 
-        features = extractFeturesTables(soup)
-        if features:
-          for key, value in features.items():
-            key = key.strip().lower().replace(" ", "_")
-            det.update({key:str([(k,v) for k,v in value.items()])})
-        try:
+    features = extractFeturesTables(soup)
+    if features:
+      for key, value in features.items():
+        key = key.strip().lower().replace(" ", "_")
+        det.update({key:str([(k,v) for k,v in value.items()])})
+    try:
 
-          det.update({
-                        'cat':row['cat'],
-                        'url_internal': row['url_internal'],
-                        'url_ai':url,
-                        'description':description,
-                        'year':year,
-                        'likes':like,
-                        'name':name,
-                        'tags':tags,
-                        'url_screen_shot':ssUrl
-                    })
+      det.update({
+                    'cat':ai['cat'],
+                    'url_internal': ai['url_internal'],
+                    'url_ai':url,
+                    'description':description,
+                    'year':year,
+                    'likes':like,
+                    'name':name,
+                    'tags':tags,
+                    'url_screen_shot':ssUrl
+                })
 
-          det =  pd.DataFrame(det, index=[0])
-
-          details = pd.concat([details, det], ignore_index = True, axis = 0)
-        except:
-          print("No data")
-
-        print(f"{int(index/len(ais)*100)}%")
-
-  return details
+      det =  pd.DataFrame(det, index=[0])
+      return det
+      # details = pd.concat([details, det], ignore_index = True, axis = 0)
+    except:
+      print("No data")
+      return None
 
 
 

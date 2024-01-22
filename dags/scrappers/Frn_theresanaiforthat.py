@@ -6,13 +6,10 @@ from airflow.decorators import (
     task,
 )
 # A function that sets sequential dependencies between tasks including lists of tasks
-from airflow.models.baseoperator import chain
+
 
 import pandas as pd
 
-
-# When using the DAG decorator, The "dag_id" value defaults to the name of the function
-# it is decorating if not explicitly set. In this example, the "dag_id" value would be "example_dag_basic".
 @dag(
     # This defines how often your DAG will run, or the schedule by which your DAG runs. In this case, this DAG
     # will run daily
@@ -20,10 +17,10 @@ import pandas as pd
     # This DAG is set to run for the first time on January 1, 2023. Best practice is to use a static
     # start_date. Subsequent DAG runs are instantiated based on the schedule
     start_date=datetime(2023, 1, 1),
-    schedule_interval='0 2 * * *',
     # When catchup=False, your DAG will only run the latest run that would have been scheduled. In this case, this means
     # that tasks will not be run between January 1, 2023 and 30 mins ago. When turned on, this DAG's first
     # run will be for the next 30 mins, per the its schedule
+    schedule_interval='0 2 * * *',
     catchup=False,
     default_args={
         "retries": 2,  # If a task fails, it will retry 2 times.
@@ -32,11 +29,10 @@ import pandas as pd
 )  # If set, this tag is shown in the DAG view of the Airflow UI
 
 
-def Frn_aitoolhunt():
+def Frn_theresanaiforthat():
     """
-    Extract Data from AiToolHunt as a refrence
+    Extract Data from tasks of Theresanaiforthat as a refrence
     """
-
 
     # @task.external_python(task_id="aitoolhunt_tabels", python=PATH_TO_PYTHON_BINARY)
     @task()
@@ -49,22 +45,20 @@ def Frn_aitoolhunt():
         """
         tables = {
 
-          "ref_aitoolhunt_allAis":
+        "ref_theresanaiforthat_allAis":
 
           """
-          cat VARCHAR(255),
-          url_internal VARCHAR(255),
-          insert_date timestamp,
-          delete_date timestamp
+          task          VARCHAR(255),
+          url_internal  VARCHAR(255),
+          insert_date   timestamp,
+          delete_date   timestamp
 
           """,
-
-          "ref_aitoolhunt_allAis_temp":
+        "ref_theresanaiforthat_allAis_temp":
 
           """
-          cat VARCHAR(255),
-          url_internal VARCHAR(255),
-          insert_date timestamp
+          task          VARCHAR(255),
+          url_internal  VARCHAR(255)
 
           """,
 
@@ -75,47 +69,45 @@ def Frn_aitoolhunt():
 
     @task()
     def extractAllAis():
-        """
-        Extract all Ais inside each category
-        """
-        from modules.refAitoolhunt import allAvailableAi , findCategories
+        '''Extract all Ais inside each category'''
+
+        from modules.refTheresanaiforthat import  findAllTasks, discoverTasks
         from modules.driver import createDriver
         from modules.dbExecute import fetchData, insertData
 
         # Open target site and
-        URL_TARGET='https://www.aitoolhunt.com'
-        URL_SELENIUM="http://172.19.0.8:4444/wd/hub"  #chrome-3
+        URL_TARGET='https://theresanaiforthat.com/tasks/'
+        URL_SELENIUM="http://172.19.0.6:4444/wd/hub" # chrome-2
 
-        driver = createDriver(URL_TARGET, URL_SELENIUM)
+        driver = createDriver(URL_TARGET, URL_SELENIUM, enableCookies=True)
 
-        cats = findCategories(driver)
+        tasks = findAllTasks(driver)
 
-        # Fetch all cats that already exist temporarily
-        tempCats = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_allAis_temp"', columns =['cat'])
+        # Fetch all tasks that already exist temporarily
+        tempTasks = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis_temp"', columns =['task'])
 
-        # Keep uniqe cats
-        tempCats = list(set(tempCats['cat']))
-        if len(tempCats)>0:
-            cats = [x for x in cats if x not in tempCats]
-        print(f"{len(cats)} new tasks")
+        # Keep uniqe tasks
+        tempTasks = list(set(tempTasks['task']))
+        if len(tempTasks)>0:
+            tasks = [x for x in tasks if x not in tempTasks]
+        print(f"{len(tasks)} new tasks")
 
-        # loop over all cats
-        for cat in cats:
-            ais = allAvailableAi(driver, cat, URL_TARGET)
-            insertData(ais, table='"DW_RAW"."ref_aitoolhunt_allAis_temp"',)
+        # loop over all tasks
+        for tsk in tasks:
+            ais = discoverTasks(driver, task=tsk,)
+            insertData(ais, table='"DW_RAW"."ref_theresanaiforthat_allAis_temp"',)
         driver.quit()
 
-        finalAis = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_allAis_temp"', columns =['cat', 'url_internal'])
-
+        finalAis = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis_temp"', columns =['task', 'url_internal'])
         return finalAis
 
 
     @task()
     def fetchExistingAis():
-        """Fetch existing stored Ais"""
+        '''Fetch existing stored Ais'''
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_allAis"', columns =['cat', 'url_internal'])
+        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis"', columns =['task', 'url_internal'])
 
         return result
 
@@ -132,8 +124,10 @@ def Frn_aitoolhunt():
 
 
     @task()
-    def loadData (df, table='"DW_RAW"."ref_aitoolhunt_allAis"' ,dag_run: DagRun | None = None ):
+    def loadData (df, table='"DW_RAW"."ref_theresanaiforthat_allAis"' ,dag_run: DagRun | None = None ):
         from modules.dbExecute import insertData
+
+        print(f"{len(df)} rows ready to import at {dag_run.queued_at}")
 
         df['insert_date'] = dag_run.queued_at
         insertData(df, table,)
@@ -146,18 +140,19 @@ def Frn_aitoolhunt():
 
         command = 'Delete temporary db'
         sql =   """
-                delete from "DW_RAW"."ref_aitoolhunt_allAis_temp"
+                delete from "DW_RAW"."ref_theresanaiforthat_allAis_temp"
                 """
         exeSql(sql, command)
 
+
     int = initTables()
-    ais = extractAllAis()
+    Ais = extractAllAis()
     ex = fetchExistingAis()
-    ne = findNewAis(ais, ex)
-    ld = loadData(df=ne)
+    ne = findNewAis(Ais, ex)
+    ld = loadData(df= ne)
     ct = cleanTempDb()
 
-    int>>ais>>ex>>ne>>ld>>ct
+    int>>Ais>>ex>>ne>>ld>>ct
 
-Frn_aitoolhunt()
+Frn_theresanaiforthat()
 
