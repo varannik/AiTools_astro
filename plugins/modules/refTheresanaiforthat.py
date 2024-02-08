@@ -157,9 +157,11 @@ def discoverTasks(driver, task, ):
       for x in allAis:
         l = x.select_one("a.ai_link.new_tab")
         l = l['href']
+        n  = x.select_one("a.ai_link.new_tab > span").text
+
 
         tks = dict()
-        tks.update({'task':task, 'url_internal':l})
+        tks.update({'task':task, 'name': n ,'url_internal':l})
 
         det =  pd.DataFrame(tks, index=[0])
         ais = pd.concat([ais, det], ignore_index = True, axis = 0)

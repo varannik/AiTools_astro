@@ -7,7 +7,7 @@ from airflow.decorators import (
 )
 
 import pandas as pd
-from datetime import timedelta
+
 
 
 # When using the DAG decorator, The "dag_id" value defaults to the name of the function
@@ -24,14 +24,13 @@ from datetime import timedelta
     # run will be for the next 30 mins, per the its schedule
     catchup=False,
     default_args={
-        "retries": 200,
-        'retry_delay': timedelta(seconds=10),
+        "retries": 2,  # If a task fails, it will retry 2 times.
     },
     tags=["scrapper"],
 )  # If set, this tag is shown in the DAG view of the Airflow UI
 
 
-def Trg_aitoolhunt():
+def Trg_gpt():
     """
     Extract Data from AiToolHunt as a refrence
     """
@@ -82,73 +81,61 @@ def Trg_aitoolhunt():
 
 
     @task()
+    def checkTempAis(ais):
+        '''Extract scrapped ais'''
+        from modules.dbExecute import fetchData
+
+        result = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_target_features_temp"', columns =['url_ai'])
+
+        if len(result)>0:
+            ais = ais[~ais['url_ai'].isin(result['url_ai'] )]
+
+        print(f"{len(ais)} new ais to discover ")
+        return ais
+
+
+    @task()
     def extractTargetFeatures(ais, dag_run: DagRun | None = None):
         """
         Extract all features on target Ai website(Logo, screen shot, ...)
         """
         from modules.globalElements import targetPageFeatures
         from modules.driver import createDriver
-        from modules.dbExecute import insertData, fetchData
-        from selenium.common.exceptions import TimeoutException
+        from modules.dbExecute import insertData
+
+        # Open target site and
+        URL_TARGET='https://www.aitoolhunt.com'
+        URL_SELENIUM="http://172.19.0.8:4444/wd/hub" #chrome-1
 
 
-        exda = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_target_features_temp"', columns =['url_ai'])
-
-        if len(exda)>0:
-            ais = ais[~ais['url_ai'].isin(exda['url_ai'] )]
-
-        print(f"{len(ais)} new ais to discover ")
+        driver = createDriver(URL_TARGET, URL_SELENIUM)
 
 
-        try :
-            # Open target site and
-            URL_TARGET='https://www.aitoolhunt.com'
-            URL_SELENIUM="http://172.19.0.10:4444/wd/hub"  # chrome-3
-            driver = createDriver(URL_TARGET, URL_SELENIUM)
-            driver.set_page_load_timeout(5)
 
-            for index, row in ais.iterrows():
-                try:
-                    df = targetPageFeatures(driver, row)
-                    df['insert_date'] = dag_run.queued_at
-                    insertData(df, table='"DW_RAW"."ref_aitoolhunt_target_features"')
-                    status = "S"
-                    print("URL successfully Accessed")
+        for index, row in ais.iterrows():
+            try:
+                df = targetPageFeatures(driver, row)
+                df['insert_date'] = dag_run.queued_at
+                insertData(df, table='"DW_RAW"."ref_aitoolhunt_target_features"')
+                status = "S"
 
-                except:
-                    status = "F"
-                    driver.quit()
-                    driver = createDriver(URL_TARGET, URL_SELENIUM)
-                    driver.set_page_load_timeout(5)
 
-                # Update temp table ----------
-                dicTemp =dict()
-                dfTemp = pd.DataFrame(columns=['url_ai', 'status', 'insert_date'])
-                dicTemp.update({
-                'url_ai'        :row['url_ai'],
-                'status'        :status,
-                'insert_date'   :dag_run.queued_at
-                })
-                dfTemp.loc[0]=dicTemp
-                insertData(dfTemp, table='"DW_RAW"."ref_aitoolhunt_target_features_temp"')
-            # ----------------------------
+            except:
+                status = "F"
+                driver.quit()
+                driver = createDriver(URL_TARGET, URL_SELENIUM)
 
-        except TimeoutException as e:
-            print("Page load Timeout Occurred. Quitting !!!")
-                            # Update temp table ----------
+            # Update temp table ----------
             dicTemp =dict()
             dfTemp = pd.DataFrame(columns=['url_ai', 'status', 'insert_date'])
             dicTemp.update({
             'url_ai'        :row['url_ai'],
-            'status'        :"F",
+            'status'        :status,
             'insert_date'   :dag_run.queued_at
             })
             dfTemp.loc[0]=dicTemp
             insertData(dfTemp, table='"DW_RAW"."ref_aitoolhunt_target_features_temp"')
-            driver.quit()
-
-
-        # ----------------------------
+            # ----------------------------
 
         driver.quit()
 
@@ -190,17 +177,18 @@ def Trg_aitoolhunt():
 
         command = 'Delete temporary db'
         sql =   """
-                delete from "DW_RAW".ref_aitoolhunt_target_features_temp
+                delete from "DW_RAW".ref_aitoolhunt_features_temp
                 """
         exeSql(sql, command)
 
 
     init = initTables()
     ais = fetchExistingAiFeatures()
-    exta = extractTargetFeatures(ais)
+    unai = checkTempAis(ais)
+    exta = extractTargetFeatures(unai)
     cleaT= deleteUnchangedFeatures()
     cleat= cleanTempDb()
 
-    init>>ais>>exta>>cleaT>>cleat
+    init>>ais>>unai>>exta>>cleaT>>cleat
 
-Trg_aitoolhunt()
+Trg_gpt()

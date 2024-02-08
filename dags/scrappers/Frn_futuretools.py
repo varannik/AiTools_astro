@@ -22,7 +22,7 @@ import pandas as pd
     # run will be for the next 30 mins, per the its schedule
     catchup=False,
     default_args={
-        "retries": 2,  # If a task fails, it will retry 2 times.
+        "retries": 0,  # If a task fails, it will retry 2 times.
     },
     tags=["scrapper"],
 )  # If set, this tag is shown in the DAG view of the Airflow UI
@@ -36,8 +36,6 @@ def Frn_futuretools():
     @task()
     def initTables():
         from modules.dbExecute import cretaTables
-
-
         """
         Init raw tabels if not exist
         """
@@ -46,14 +44,13 @@ def Frn_futuretools():
           "ref_futuretools_allAis":
 
           """
-          pageUrl VARCHAR(255),
-          screenshotUrl VARCHAR(320),
-          shortDes VARCHAR(1000),
-          name VARCHAR(255),
-          priveUrl VARCHAR(255),
-          insertDate timestamp,
-          removeDate timestamp
-
+          url_ai            VARCHAR(255),
+          url_screen_shot   VARCHAR(500),
+          url_internal      VARCHAR(255),
+          short_description VARCHAR(1000),
+          name              VARCHAR(255),
+          insert_date       timestamp,
+          delete_date       timestamp
           """,
 
         }
@@ -72,20 +69,21 @@ def Frn_futuretools():
 
         # Open target site and
         URL_TARGET='https://www.futuretools.io'
-        URL_SELENIUM="http://172.19.0.9:4444/wd/hub" # chrome-1
+        URL_SELENIUM="http://172.19.0.10:4444/wd/hub" # chrome-3
 
         driver = createDriver(URL_TARGET, URL_SELENIUM)
-        Ais = scroll_down_to_load(driver)
+        ais = scroll_down_to_load(driver)
 
+        driver.quit()
 
-        return Ais
+        return ais
 
     @task()
     def fetchData():
         """Fetch existing stored Ais"""
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_futuretools_allAis"', columns =['name', 'priveUrl'])
+        result = fetchData(tableName='"DW_RAW"."ref_futuretools_allAis"', columns =['url_internal'])
 
         return result
 
@@ -97,22 +95,23 @@ def Frn_futuretools():
         if len(ex)==0:
             pass
         else :
-            df = df[~df['priveUrl'].isin(ex['priveUrl'] )]
+            df = df[~df['url_internal'].isin(ex['url_internal'] )]
         return df
 
     @task()
     def loadData (df, table='"DW_RAW"."ref_futuretools_allAis"' ,dag_run: DagRun | None = None ):
         from modules.dbExecute import insertData
 
-        df['insertDate'] = dag_run.queued_at
+        df['insert_date'] = dag_run.queued_at
         insertData(df, table,)
 
     int = initTables()
-    Ais = extractAllAis()
+    ais = extractAllAis()
     ex = fetchData()
-    newAis = findNewAis(Ais, ex)
+    newAis = findNewAis(ais, ex)
     ld = loadData(df= newAis)
-    int>>Ais>>ex>>newAis>>ld
+
+    int>>ais>>ex>>newAis>>ld
 
 
 Frn_futuretools()

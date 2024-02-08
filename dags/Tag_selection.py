@@ -25,7 +25,7 @@ from datetime import timedelta
 )
 
 
-def Int_theresanaiforthat():
+def Tag_selection():
     """
     Extract Data from theresanaiforthat as a refrence
     """
@@ -132,7 +132,7 @@ def Int_theresanaiforthat():
         try:
             # Open target site and
             URL_TARGET='https://theresanaiforthat.com'
-            URL_SELENIUM="http://172.19.0.9:4444/wd/hub" # chrome-1
+            URL_SELENIUM="http://172.19.0.7:4444/wd/hub" # chrome-3
             driver = createDriver(URL_TARGET, URL_SELENIUM, enableCookies=True)
             driver.set_page_load_timeout(20)
 
@@ -341,5 +341,5 @@ def Int_theresanaiforthat():
 
     init>>ais>>newF>>[dp,da,dd,dj]>>cd
 
-Int_theresanaiforthat()
+Tag_selection()
 

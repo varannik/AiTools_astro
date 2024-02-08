@@ -2,7 +2,7 @@
 Extract special global elemnts (Logo, Favicon, ...)
 '''
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import time
 import pandas as pd
 import os
@@ -85,6 +85,7 @@ def cleanLogoStr(soup, URL_TARGET):
   '''Return cleaned logo url '''
   try:
     head, sep, tail = getLogoStr(soup).partition(' ')
+    print(head)
     if "http" in head:
       return head
     else:
@@ -96,85 +97,78 @@ def cleanLogoStr(soup, URL_TARGET):
 
 def takeScreenShot(driver, name):
   '''Take screenShot of target Ai web page'''
-  print(os.getcwd())
 
-  namePath = f'{name}_scr.png'
-  excPath = f'{os.getcwd()}/plugins/modules/screenshots/{name}_scr.png'
-  print(excPath)
-  driver.save_screenshot(excPath)
+  SC_PATH = f'{os.getcwd()}/screenshots/{name}_scr.png'
+  namePath = f"{name}_scr.png"
+  driver.save_screenshot(SC_PATH)
 
   return namePath
 
-
-
-#----------------- Target page features
-
+# ------------------ target page
 def targetPageFeatures(driver, row):
-  '''Extract all information from target Ai page '''
+    '''Extract all information from target Ai page '''
 
-  driver.set_page_load_timeout(10)
-  # details = pd.DataFrame()
+    url = row['url_ai']
+    name = row['url_ai'].replace('.','_')
+    print(url)
 
-  # for index, row in Ais.iterrows():
+    if 'http' in url:
+        try:
+            driver.get(url)
+        except:
+            pass
 
-  url = row['url_ai']
-  name = row['url_ai'].replace('.','_')
-  print(url)
+    else:
+        re_url = url
+        try :
+            re_url = "https://" + url
+            print(re_url)
+            driver.get(re_url)
+            url = re_url
 
-  re_url = url
+        except:
+            try:
+                re_url = "https://www." + url
+                print(re_url)
+                driver.get(re_url)
+                url = re_url
+            except:
+                re_url = "http://www." + url
+                print(re_url)
+                driver.get(re_url)
+                url = re_url
 
-  try :
-    re_url = "https://" + url
-    print(re_url)
-    driver.get(re_url)
-    url = re_url
+    time.sleep(5)
 
-  except:
+    currentUrl = "http://" + urlparse(driver.current_url).netloc
+
+    soup = soupParser(driver)
+
+    #------------- favicon
+    favicon = getFavicon(soup)
+    if not 'http' in favicon:
+        favicon = urljoin(currentUrl ,favicon)
+
+    #------------- logo
+    logo = cleanLogoStr(soup, currentUrl)
     try:
-      re_url = "https://www." + url
-      print(re_url)
-      driver.get(re_url)
-      url = re_url
+        if len(logo)>1000:
+            logo=None
     except:
-      re_url = "http://www." + url
-      print(re_url)
-      driver.get(re_url)
-      url = re_url
+        pass
 
-  time.sleep(5)
+    #------------- screenshot
+    screenPath = takeScreenShot(driver,name)
 
-  currentUrl = driver.current_url
+    data = dict()
+    data.update({
+        "url_ai": row['url_ai'],
+        "url_stb" :currentUrl,
+        "url_fav" :favicon,
+        "url_log":logo,
+        "path_screen_shot":screenPath
+    })
+    print(data)
+    data =  pd.DataFrame(data, index=[0])
 
-  soup = soupParser(driver)
-
-  favicon = getFavicon(soup)
-  if not 'http' in favicon:
-    favicon = url + favicon
-
-
-  logo = cleanLogoStr(soup, url)
-  try:
-    if len(logo)>1000:
-        logo=None
-  except:
-    pass
-
-
-  screenPath = takeScreenShot(driver,name)
-
-  data = dict()
-  data.update({
-    "url_ai": row['url_ai'],
-    "url_stb" :currentUrl,
-    "url_fav" :favicon,
-    "url_log":logo,
-    "path_screen_shot":screenPath
-  })
-
-  data =  pd.DataFrame(data, index=[0])
-
-    #   details = pd.concat([details, data], ignore_index = True, axis = 0)
-    # except :
-    #   pass
-
-  return data
+    return data

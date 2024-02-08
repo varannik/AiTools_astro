@@ -1,7 +1,7 @@
 
 seeds:
-  - name: ref_aitoolhunt_allAis
-    description: All Ais exist in AiToolHunt
+  - name: tags
+    description: defined tags and their related carrier and subcategories
     docs:
       show: true
     config:
@@ -9,8 +9,10 @@ seeds:
       schema: RAW
 
     columns:
-      - name: cat
-        description: categories
-      - name: internal_url
-        description: Internal Url inside the AiToolhunt for specific Ai
+      - name: main_categories
+      - name: sub_categories
+      - name: tag
+
+
+
 

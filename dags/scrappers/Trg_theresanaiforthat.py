@@ -1,3 +1,4 @@
+
 from pendulum import datetime
 from airflow.models.dagrun import DagRun
 
@@ -7,28 +8,24 @@ from airflow.decorators import (
 )
 
 import pandas as pd
+from datetime import timedelta
 
 
 
 # When using the DAG decorator, The "dag_id" value defaults to the name of the function
 # it is decorating if not explicitly set. In this example, the "dag_id" value would be "example_dag_basic".
 @dag(
-    # This defines how often your DAG will run, or the schedule by which your DAG runs. In this case, this DAG
-    # will run daily
-    # schedule="@daily",
-    # This DAG is set to run for the first time on January 1, 2023. Best practice is to use a static
-    # start_date. Subsequent DAG runs are instantiated based on the schedule
+
     start_date=datetime(2023, 1, 1),
     schedule_interval='20 6 * * *',
-    # When catchup=False, your DAG will only run the latest run that would have been scheduled. In this case, this means
-    # that tasks will not be run between January 1, 2023 and 30 mins ago. When turned on, this DAG's first
-    # run will be for the next 30 mins, per the its schedule
+
     catchup=False,
     default_args={
-        "retries": 2,  # If a task fails, it will retry 2 times.
+        "retries": 200,
+        'retry_delay': timedelta(seconds=10),
     },
     tags=["scrapper"],
-)  # If set, this tag is shown in the DAG view of the Airflow UI
+)
 
 
 def Trg_theresanaiforthat():
@@ -62,7 +59,8 @@ def Trg_theresanaiforthat():
 
           """
           url_ai             VARCHAR(300),
-          insert_date        timestamp,
+          status             VARCHAR(1),
+          insert_date        timestamp
 
           """,
 
@@ -70,75 +68,129 @@ def Trg_theresanaiforthat():
 
         cretaTables(tables)
 
-
-    @task()
-    def fetchExistingTargetFeatures():
-        """Fetch existing stored features of target Ais"""
-        from modules.dbExecute import fetchData
-
-        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_target_features_temp"', columns =['url_ai'])
-
-        return result
-
-
     @task()
     def fetchExistingAiFeatures():
         """Fetch existing stored Ais"""
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_target_features"', columns =['url_ai'])
+        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_features"', columns =['url_ai'])
 
         return result
 
 
     @task()
-    def findNewAis(exFe, exTF):
-        '''Incremental add new Ais'''
-
-        if len(exTF)==0:
-            pass
-        else :
-            exFe = exFe[~exFe['url_ai'].isin(exTF['url_ai'] )]
-            print(f"{len(exFe)} New Ais to descover ")
-        return exFe
-
-
-    @task()
-    def extractTargetFeatures(Ais, table='"DW_RAW"."ref_theresanaiforthat_target_features"' ,dag_run: DagRun | None = None):
+    def extractTargetFeatures(exea, dag_run: DagRun | None = None):
         """
         Extract all features on target Ai website(Logo, screen shot, ...)
         """
         from modules.globalElements import targetPageFeatures
         from modules.driver import createDriver
-        from modules.dbExecute import insertData
-
-        # Open target site and
-        URL_TARGET='https://www.theresanaiforthat.com'
-        URL_SELENIUM="http://172.19.0.6:4444/wd/hub"
+        from modules.dbExecute import insertData, fetchData
+        from selenium.common.exceptions import TimeoutException
 
 
-        driver = createDriver(URL_TARGET, URL_SELENIUM)
+        exda = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_target_features_temp"', columns =['url_ai'])
 
-        for index, row in Ais.iterrows():
-            try:
-                df = targetPageFeatures (driver, row)
-                df['insert_date'] = dag_run.queued_at
-                insertData(df, table,)
-            except:
-                driver.quit()
-                driver = createDriver(URL_TARGET, URL_SELENIUM)
+        if len(exda)==0:
+            pass
+        else :
+            exea = exea[~exea['url_ai'].isin(exda['url_ai'] )]
+            print(f"{len(exea)} New Ais to descover ")
+
+        try :
+            # Open target site and
+            URL_TARGET='https://www.theresanaiforthat.com'
+            URL_SELENIUM="http://172.19.0.9:4444/wd/hub"  # chrome-1
+            driver = createDriver(URL_TARGET, URL_SELENIUM)
+            driver.set_page_load_timeout(5)
+
+            for index, row in exea.iterrows():
+
+                try:
+                    df = targetPageFeatures (driver, row)
+                    df['insert_date'] = dag_run.queued_at
+                    insertData(df, table='"DW_RAW"."ref_theresanaiforthat_target_features"' ,)
+                    status = "S"
+                    print("URL successfully Accessed")
+                except:
+                    status = "F"
+                    driver.quit()
+                    driver = createDriver(URL_TARGET, URL_SELENIUM)
+                    driver.set_page_load_timeout(5)
+
+                            # Update temp table ----------
+                dicTemp =dict()
+                dfTemp = pd.DataFrame(columns=['url_ai', 'status', 'insert_date'])
+                dicTemp.update({
+                'url_ai'        :row['url_ai'],
+                'status'        :status,
+                'insert_date'   :dag_run.queued_at
+                })
+                dfTemp.loc[0]=dicTemp
+                insertData(dfTemp, table='"DW_RAW"."ref_theresanaiforthat_target_features_temp"')
+
+
+
+        except TimeoutException as e:
+            print("Page load Timeout Occurred. Quitting !!!")
+            driver.quit()
+
+
+        # ----------------------------
 
         driver.quit()
 
+    @task()
+    def deleteUnchangedAis():
+        '''Delete new duplicated rows without any changes in features'''
+        from modules.dbExecute import exeSql
+
+        command = 'Delete duplicated rows in ref_theresanaiforthat_target_features'
+        sql =   """
+                    WITH prop AS (
+                    SELECT *,RANK() OVER(PARTITION BY url_ai,
+                                                        url_stb            ,
+                                                        url_fav            ,
+                                                        url_log            ,
+                                                        path_screen_shot
+
+                                                        Order by insert_date) rn
+                    FROM "DW_RAW".ref_theresanaiforthat_target_features
+                    )
+
+                    delete from "DW_RAW".ref_theresanaiforthat_target_features
+                    where (url_ai, insert_date)
+                    in (
+                        with dup as (
+                                    SELECT url_ai, insert_date
+                                    FROM prop
+                                    where rn >1
+                                    )
+                        select * from dup
+                        );
+                """
+        exeSql(sql, command)
+
+    @task()
+    def cleanTempDb():
+        '''Clean temporary descovery db'''
+        from modules.dbExecute import exeSql
+
+        command = 'Delete temporary db'
+        sql =   """
+                delete from "DW_RAW".ref_theresanaiforthat_target_features_temp
+                """
+        exeSql(sql, command)
 
 
+    init = initTables()
+    exea = fetchExistingAiFeatures()
+    etfa = extractTargetFeatures(exea)
+    unch = deleteUnchangedAis()
+    cltm = cleanTempDb()
 
-    initTables()
-    exTF = fetchExistingTargetFeatures()
-    exFe = fetchExistingAiFeatures()
-    newAis = findNewAis(exFe, exTF)
-    extractTargetFeatures(newAis)
-    # loadData(fullTargetFeatures)
+    init>>exea>>etfa>>unch>>cltm
+
 
 Trg_theresanaiforthat()
 

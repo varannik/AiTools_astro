@@ -49,6 +49,7 @@ def Frn_theresanaiforthat():
 
           """
           task          VARCHAR(255),
+          name          VARCHAR(255),
           url_internal  VARCHAR(255),
           insert_date   timestamp,
           delete_date   timestamp
@@ -58,6 +59,7 @@ def Frn_theresanaiforthat():
 
           """
           task          VARCHAR(255),
+          name          VARCHAR(255),
           url_internal  VARCHAR(255)
 
           """,
@@ -77,7 +79,7 @@ def Frn_theresanaiforthat():
 
         # Open target site and
         URL_TARGET='https://theresanaiforthat.com/tasks/'
-        URL_SELENIUM="http://172.19.0.6:4444/wd/hub" # chrome-2
+        URL_SELENIUM="http://172.19.0.9:4444/wd/hub" # chrome-1
 
         driver = createDriver(URL_TARGET, URL_SELENIUM, enableCookies=True)
 
@@ -98,7 +100,7 @@ def Frn_theresanaiforthat():
             insertData(ais, table='"DW_RAW"."ref_theresanaiforthat_allAis_temp"',)
         driver.quit()
 
-        finalAis = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis_temp"', columns =['task', 'url_internal'])
+        finalAis = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis_temp"', columns =['task', 'name', 'url_internal'])
         return finalAis
 
 
@@ -107,7 +109,7 @@ def Frn_theresanaiforthat():
         '''Fetch existing stored Ais'''
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis"', columns =['task', 'url_internal'])
+        result = fetchData(tableName='"DW_RAW"."ref_theresanaiforthat_allAis"', columns =['task', 'name' , 'url_internal'])
 
         return result
 

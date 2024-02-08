@@ -1,0 +1,21 @@
+version: 1
+
+sources:
+  - name: aitoolhunt
+    database: aitools
+    schema: DW_RAW
+    tables:
+      - name: ref_aitoolhunt_features
+      - name: ref_aitoolhunt_target_features
+
+  - name: theresanaiforthat
+    database: aitools
+    schema: DW_RAW
+    tables:
+      - name: ref_theresanaiforthat_allAis
+      - name: ref_theresanaiforthat_features
+      - name: ref_theresanaiforthat_target_features
+      - name: ref_theresanaiforthat_attributes
+      - name: ref_theresanaiforthat_description
+
+

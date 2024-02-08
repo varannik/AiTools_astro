@@ -6,7 +6,6 @@ from airflow.decorators import (
     task,
 )
 import pandas as pd
-from datetime import timedelta
 
 # When using the DAG decorator, The "dag_id" value defaults to the name of the function
 # it is decorating if not explicitly set. In this example, the "dag_id" value would be "example_dag_basic".
@@ -23,14 +22,13 @@ from datetime import timedelta
     # run will be for the next 30 mins, per the its schedule
     catchup=False,
     default_args={
-        "retries": 200,
-        'retry_delay': timedelta(seconds=10),
+        "retries": 2,  # If a task fails, it will retry 2 times.
     },
     tags=["scrapper"],
 )  # If set, this tag is shown in the DAG view of the Airflow UI
 
 
-def Int_aitoolhunt():
+def Int_futuretools():
     '''Extract Data from AiToolHunt as a refrence'''
 
     @task()
@@ -41,30 +39,23 @@ def Int_aitoolhunt():
         """
         tables = {
 
-        "ref_aitoolhunt_features":
+        "ref_futuretools_features":
 
         """
-        pricing       VARCHAR(100),
-        Semrush_rank  VARCHAR(100),
-        location      VARCHAR(100),
-        tech_used 	  VARCHAR(255),
-        features	  VARCHAR(10000),
-        use_cases	  VARCHAR(10000),
-        cat	          VARCHAR(100),
-        url_internal  VARCHAR(255),
-        url_ai	      VARCHAR(255),
-        description   VARCHAR(2000),
-        year	      varchar(6),
-        likes	      int4,
         name	      VARCHAR(255),
-        tags	      VARCHAR(100),
-        url_screen_shot VARCHAR(255),
+        description   VARCHAR(3000),
+        url_internal  VARCHAR(255),
+        pricing       VARCHAR(100),
+        url_ai        VARCHAR(255),
+        up_vote       int4,
+        tags	      VARCHAR(500),
+        url_screen_shot VARCHAR(500),
         insert_date   timestamp,
         delete_date   timestamp
 
         """,
 
-        "ref_aitoolhunt_features_temp":
+        "ref_futuretools_features_temp":
 
         """
         url_internal	VARCHAR(255),
@@ -80,7 +71,7 @@ def Int_aitoolhunt():
         """Fetch existing stored Ais"""
         from modules.dbExecute import fetchData
 
-        result = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_allAis"', columns =['cat', 'url_internal'])
+        result = fetchData(tableName='"DW_RAW"."ref_futuretools_allAis"', columns =['url_internal'])
         print(f"{len(result)} last existing Ais with duplicates")
         result = result.drop_duplicates(subset=['url_internal'], keep='first')
         print(f"{len(result)} last existing Ais unique" )
@@ -90,51 +81,31 @@ def Int_aitoolhunt():
     @task()
     def extractFullfeatures(ais, dag_run: DagRun | None = None):
         '''Extract all Ais inside each category'''
-        from modules.refAitoolhunt import aiFeatures
+        from modules.refFuturetools import aiFeatures
         from modules.driver import createDriver
         from modules.dbExecute import fetchData, insertData
-        from selenium.common.exceptions import TimeoutException
 
+        # Open target site and
+        URL_TARGET='https://www.futuretools.io'
+        URL_SELENIUM="http://172.19.0.10:4444/wd/hub" #chrome-3
+        driver = createDriver(URL_TARGET, URL_SELENIUM)
 
-        exda = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_features_temp"', columns =['url_internal'])
+        tempFeat = fetchData(tableName='"DW_RAW"."ref_futuretools_features_temp"', columns =['url_internal'])
 
         # Removed temperory discoverd ais
-        if len(exda)>0:
-            ais = ais[~ais['url_internal'].isin(exda['url_internal'] )]
+        if len(tempFeat)>0:
+            ais = ais[~ais['url_internal'].isin(tempFeat['url_internal'] )]
         print(f"{len(ais)} new Ais to discover their features")
 
+        for index, row in ais.iterrows():
+            print(row['url_internal'])
+            features = aiFeatures(driver, URL_TARGET, ai = row)
 
-        try :
-            # Open target site and
-            URL_TARGET='https://www.aitoolhunt.com'
-            URL_SELENIUM="http://172.19.0.8:4444/wd/hub"  # chrome-2
-            driver = createDriver(URL_TARGET, URL_SELENIUM)
-            driver.set_page_load_timeout(20)
-
-
-            for index, row in ais.iterrows():
-                print(row['url_internal'])
-                features = aiFeatures(driver, URL_TARGET, ai = row)
-
-                try:
-                    features['insert_date'] = dag_run.queued_at
-                    insertData(features, table='"DW_RAW"."ref_aitoolhunt_features"')
-                    print("URL successfully Accessed")
-                except:
-                    driver.quit()
-                    driver = createDriver(URL_TARGET, URL_SELENIUM)
-                    driver.set_page_load_timeout(20)
-
-                # add temp discoverd ai
-                tm = {
-                    'url_internal': row['url_internal'],
-                    'insert_date' : dag_run.queued_at
-                    }
-                tm =  pd.DataFrame(tm, index=[0])
-                insertData(tm, table='"DW_RAW"."ref_aitoolhunt_features_temp"')
-
-        except TimeoutException as e:
-            print("Page load Timeout Occurred. Quitting !!!")
+            try:
+                features['insert_date'] = dag_run.queued_at
+                insertData(features, table='"DW_RAW"."ref_futuretools_features"')
+            except:
+                pass
 
             # add temp discoverd ai
             tm = {
@@ -142,14 +113,9 @@ def Int_aitoolhunt():
                 'insert_date' : dag_run.queued_at
                 }
             tm =  pd.DataFrame(tm, index=[0])
-            insertData(tm, table='"DW_RAW"."ref_aitoolhunt_features_temp"')
-            driver.quit()
+            insertData(tm, table='"DW_RAW"."ref_futuretools_features_temp"')
 
-        # ----------------------------
-        try:
-            driver.quit()
-        except:
-            pass
+        driver.quit()
 
 
     @task()
@@ -157,30 +123,23 @@ def Int_aitoolhunt():
         '''Delete new duplicated rows without any changes in features'''
         from modules.dbExecute import exeSql
 
-        command = 'Delete duplicated rows in ref_aitoolhunt_features'
+        command = 'Delete duplicated rows in ref_futuretools_features'
         sql =   """
                     WITH prop AS (
-                    SELECT *,RANK() OVER(PARTITION BY url_internal,
-                                                        cat,
-                                                        pricing,
-                                                        semrush_rank,
-                                                        "location",
-                                                        tech_used,
-                                                        features,
-                                                        use_cases,
-                                                        url_ai,
+                    SELECT *,RANK() OVER(PARTITION BY   url_internal,
+                                                        name,
                                                         description,
-                                                        "year",
-                                                        likes,
-                                                        "name",
+                                                        pricing,
+                                                        url_ai,
+                                                        up_vote,
                                                         tags,
                                                         url_screen_shot
 
                                                         Order by insert_date) rn
-                    FROM "DW_RAW".ref_aitoolhunt_features
+                    FROM "DW_RAW".ref_futuretools_features
                     )
 
-                    delete from "DW_RAW".ref_aitoolhunt_features
+                    delete from "DW_RAW".ref_futuretools_features
                     where (url_internal, insert_date)
                     in (
                         with dup as (
@@ -200,7 +159,7 @@ def Int_aitoolhunt():
 
         command = 'Delete temporary db'
         sql =   """
-                delete from "DW_RAW".ref_aitoolhunt_features_temp
+                delete from "DW_RAW".ref_futuretools_features_temp
                 """
         exeSql(sql, command)
 
@@ -212,5 +171,5 @@ def Int_aitoolhunt():
 
     init>>ais>>feat>>deUn>>clTm
 
-Int_aitoolhunt()
+Int_futuretools()
 

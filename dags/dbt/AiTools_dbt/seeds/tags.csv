@@ -1,0 +1,235 @@
+main_categories,sub_categories,tag
+AI Assistants,AI Chatbot Tools,Chat
+AI Assistants,AI Life Assistant Tools,Assistant
+AI Assistants,AI Chatbot Tools,Chatbot
+AI Assistants,AI Life Assistant Tools,Agent
+AI Assistants,AI Life Assistant Tools,Personal Assistant
+AI Assistants,AI Life Assistant Tools,Legal Assistant
+AI Audio Tools,AI Music Creation Tools,Music
+AI Audio Tools,AI Voice Reading Software,Text to Speech
+AI Audio Tools,AI Audio Editing Tools,Audio
+AI Audio Tools,AI Voice Reading Software,Voice
+AI Audio Tools,AI Audio Editing Tools,Audio Editing
+AI Business Tools,AI Business Management Tools,Business
+AI Business Tools,AI CRM & Sales Tools,E-Commerce
+AI Business Tools,AI Human Resources Tools,Career
+AI Business Tools,AI Finance & Legal Tools,Legal
+AI Business Tools,AI E-commerce Tools,E-Commerce
+AI Business Tools,AI Marketing Tools,Advertising
+AI Business Tools,AI Project Management Tools,Automation
+AI Business Tools,AI File Management Tools,Documents
+AI Business Tools,AI Business Management Tools,Entrepreneurship
+AI Business Tools,AI CRM & Sales Tools,CRM
+AI Business Tools,AI Human Resources Tools,Coaching
+AI Business Tools,AI Finance & Legal Tools,Legal Assistant
+AI Business Tools,AI E-commerce Tools,Marketing
+AI Business Tools,AI Marketing Tools,Branding
+AI Business Tools,AI Project Management Tools,Macros
+AI Business Tools,AI File Management Tools,Documentation
+AI Business Tools,AI Business Management Tools,Startups
+AI Business Tools,AI CRM & Sales Tools,Sales
+AI Business Tools,AI Human Resources Tools,Human Resources
+AI Business Tools,AI Finance & Legal Tools,Privacy
+AI Business Tools,AI E-commerce Tools,Sales
+AI Business Tools,AI Marketing Tools,E-Commerce
+AI Business Tools,AI Project Management Tools,Productivity
+AI Business Tools,AI File Management Tools,Google Sheet
+AI Business Tools,AI Business Management Tools,AI Workflow
+AI Business Tools,AI Human Resources Tools,Recruitment
+AI Business Tools,AI Finance & Legal Tools,Finance
+AI Business Tools,AI E-commerce Tools,Shopify
+AI Business Tools,AI Marketing Tools,Lead Generation
+AI Business Tools,AI Project Management Tools,Project Management
+AI Business Tools,AI File Management Tools,Excel
+AI Business Tools,AI Business Management Tools,Analysis
+AI Business Tools,AI Human Resources Tools,Resume
+AI Business Tools,AI Finance & Legal Tools,Investing
+AI Business Tools,AI E-commerce Tools,Surveys
+AI Business Tools,AI Marketing Tools,Marketing
+AI Business Tools,AI Project Management Tools,Task Management
+AI Business Tools,AI File Management Tools,Spreadsheets
+AI Business Tools,AI Business Management Tools,Brainstorming
+AI Business Tools,AI Marketing Tools,Sales
+AI Business Tools,AI Project Management Tools,AI Workflow
+AI Business Tools,AI File Management Tools,Online PDF Tools
+AI Business Tools,AI Marketing Tools,Surveys
+AI Data Tools,AI Search Engine Tools,Search
+AI Data Tools,AI Research & Science Tools,Search
+AI Data Tools,AI Data Management Tools,Data
+AI Data Tools,AI Search Engine Tools,Search Engine
+AI Data Tools,AI Research & Science Tools,Search Engine
+AI Data Tools,AI Data Management Tools,Data Analytics
+AI Data Tools,AI Search Engine Tools,Research
+AI Data Tools,AI Research & Science Tools,Research
+AI Data Tools,AI Data Management Tools,Excel
+AI Data Tools,AI Search Engine Tools,Online PDF Tools
+AI Data Tools,AI Research & Science Tools,Data
+AI Data Tools,AI Data Management Tools,Spreadsheets
+AI Data Tools,AI Research & Science Tools,Data Analytics
+AI Data Tools,AI Data Management Tools,SQL
+AI Data Tools,AI Research & Science Tools,Deep Learning
+AI Data Tools,AI Research & Science Tools,Predictive Analytics
+AI Data Tools,AI Research & Science Tools,NLP
+AI Design Tools,AI 3D Modeling Software,3D Model
+AI Design Tools,AI Interior Design Tools,3D Model
+AI Design Tools,AI Logo Creation Tools,Logo
+AI Design Tools,AI Fashion Design Tools,Fashion
+AI Design Tools,AI Art Creation Tools,Anime
+AI Design Tools,AI Presentation Tools,Presentations
+AI Design Tools,AI Interior Design Tools,Architecture
+AI Design Tools,AI Logo Creation Tools,Logo Generator
+AI Design Tools,AI Fashion Design Tools,Clothes
+AI Design Tools,AI Art Creation Tools,Art
+AI Design Tools,AI Presentation Tools,Visualization
+AI Design Tools,AI Interior Design Tools,Home Design
+AI Design Tools,AI Logo Creation Tools,Avatars
+AI Design Tools,AI Art Creation Tools,Graphics
+AI Design Tools,AI Interior Design Tools,Interior Design
+AI Design Tools,AI Art Creation Tools,Photography
+AI Dev Tools,AI Developer Tools,API
+AI Dev Tools,AI Coding Assistants,Coding
+AI Dev Tools,AI No Code/Low Code Tools,API
+AI Dev Tools,AI GitHub Tools,Github
+AI Dev Tools,AI Developer Tools,Code Assistant
+AI Dev Tools,AI Coding Assistants,Code Assistant
+AI Dev Tools,AI No Code/Low Code Tools,Low Code Tools
+AI Dev Tools,AI Developer Tools,Coding
+AI Dev Tools,AI No Code/Low Code Tools,No Code Tools
+AI Dev Tools,AI Developer Tools,Low Code Tools
+AI Dev Tools,AI No Code/Low Code Tools,Integration
+AI Dev Tools,AI Developer Tools,No Code Tools
+AI Dev Tools,AI Developer Tools,Integration
+AI Dev Tools,AI Developer Tools,Lab Potion
+AI Dev Tools,AI Developer Tools,Programming
+AI Entertainment,AI Gaming Tools,Games
+AI Entertainment,AI Leisure Tools,Astrology
+AI Entertainment,AI Virtual Relationship Tools,Dating
+AI Entertainment,AI Gaming Tools,Gaming
+AI Entertainment,AI Leisure Tools,Cooking
+AI Entertainment,AI Virtual Relationship Tools,Virtual Relationships
+AI Entertainment,AI Leisure Tools,Food
+AI Entertainment,AI Leisure Tools,Entertainment
+AI Entertainment,AI Leisure Tools,Fun
+AI Entertainment,AI Leisure Tools,Gift Ideas
+AI Entertainment,AI Leisure Tools,Hobbies
+AI Entertainment,AI Leisure Tools,Pets
+AI Entertainment,AI Leisure Tools,Sports
+AI Entertainment,AI Leisure Tools,Beauty
+AI Entertainment,AI Leisure Tools,Face Swap
+AI Finance Tools,AI Investment Tools,Finance
+AI Finance Tools,AI Blockchain Tools,Crypto
+AI Finance Tools,AI Investment Tools,Investing
+AI Finance Tools,AI Blockchain Tools,Blockchain
+AI Finance Tools,AI Blockchain Tools,Trading
+AI Health Tools,AI Body Wellness Tools,Health
+AI Health Tools,AI Food & Nutrition Tools,Health
+AI Health Tools,AI Mental Wellness Tools,Mental Health
+AI Health Tools,AI Body Wellness Tools,Fitness
+AI Health Tools,AI Food & Nutrition Tools,Wellness
+AI Health Tools,AI Mental Wellness Tools,Wellness
+AI Health Tools,AI Body Wellness Tools,Medical
+AI Health Tools,AI Food & Nutrition Tools,Food
+AI Health Tools,AI Mental Wellness Tools,Memory
+AI Health Tools,AI Body Wellness Tools,Wellness
+AI Health Tools,AI Food & Nutrition Tools,Recipe
+AI Health Tools,AI Food & Nutrition Tools,Nutrition
+AI Health Tools,AI Food & Nutrition Tools,Therapy
+AI Image Tools,AI Image Creation Tools,Image Generator
+AI Image Tools,AI Image Editing Software,Image Editing
+AI Image Tools,AI Image Creation Tools,Upscaling
+AI Image Tools,AI Image Editing Software,Upscaling
+AI Image Tools,AI Image Creation Tools,Text to Image
+AI Image Tools,AI Image Creation Tools,Art
+AI Language Tools,AI Translation Tools,Translation
+AI Language Tools,AI Language Services,Language Learning
+AI Learning Tools,AI Educational Tools,Academics
+AI Learning Tools,AI Educational Tools,Education
+AI Learning Tools,AI Educational Tools,Education Assistant
+AI Learning Tools,AI Educational Tools,Language Learning
+AI Productivity,AI Productivity Software,Personal Assistant
+AI Productivity,AI Automation Tools,Automation
+AI Productivity,AI Productivity Software,Productivity
+AI Productivity,AI Automation Tools,Macros
+AI Productivity,AI Productivity Software,Speech to Text
+AI Productivity,AI Automation Tools,Productivity
+AI Productivity,AI Productivity Software,Note Taking
+AI Productivity,AI Automation Tools,AI Workflow
+AI Productivity,AI Productivity Software,Scheduling
+AI Productivity,AI Automation Tools,Scheduling
+AI Productivity,AI Productivity Software,Analysis
+AI Productivity,AI Automation Tools,API
+AI Productivity,AI Automation Tools,Integration
+AI Security Tools,AI Cybersecurity Tools,Privacy
+AI Security Tools,AI Autonomous Security Tools,AI Detection
+AI Security Tools,AI Detection Tools,AI Detection
+AI Security Tools,AI Cybersecurity Tools,Security
+AI Security Tools,AI Autonomous Security Tools,Autonomous AI
+AI Social Media,AI Social Networking Tools,Instagram
+AI Social Media,AI Email Tools,Email
+AI Social Media,AI Social Media Chatbots,Chat
+AI Social Media,AI Social Networking Tools,Linkedin
+AI Social Media,AI Email Tools,Email Assistant
+AI Social Media,AI Social Media Chatbots,Chatbot
+AI Social Media,AI Social Networking Tools,Twitter
+AI Social Media,AI Social Media Chatbots,Customer Support
+AI Social Media,AI Social Networking Tools,Youtube
+AI Social Media,AI Social Media Chatbots,Support Team
+AI Social Media,AI Social Networking Tools,Social Media
+AI Social Media,AI Social Media Chatbots,TikTok
+AI Social Media,AI Social Networking Tools,Social Network
+AI Social Media,AI Social Networking Tools,TikTok
+AI Text Tools,AI SEO Writing Tools,Speech to Text
+AI Text Tools,AI Storytelling Tools,Story
+AI Text Tools,Advanced AI Text Generators,Books and Authors
+AI Text Tools,AI Summarization Tools,Summarization
+AI Text Tools,AI SEO Writing Tools,Writing
+AI Text Tools,AI Storytelling Tools,Story Teller
+AI Text Tools,Advanced AI Text Generators,Copywriting
+AI Text Tools,AI Summarization Tools,Summarizer
+AI Text Tools,AI SEO Writing Tools,SEO
+AI Text Tools,AI Storytelling Tools,Storytelling Generator
+AI Text Tools,Advanced AI Text Generators,Essays
+AI Text Tools,AI SEO Writing Tools,Text Generation
+AI Text Tools,Advanced AI Text Generators,Writing
+AI Text Tools,AI SEO Writing Tools,Text-to-video
+AI Text Tools,Advanced AI Text Generators,Text Generation
+AI Text Tools,AI SEO Writing Tools,Articles
+AI Text Tools,Advanced AI Text Generators,Transcription
+AI Text Tools,AI SEO Writing Tools,Blogs
+AI Text Tools,AI SEO Writing Tools,Blogging
+AI Text Tools,AI SEO Writing Tools,Visualization
+AI Utility & Resources,AI Aggregators,Aggregators
+AI Utility & Resources,AI Resources,History
+AI Utility & Resources,LLMs,LLMs
+AI Utility & Resources,AI Utilities,QR Code
+AI Utility & Resources,AI Real Estate Tools,Real Estate
+AI Utility & Resources,AI Travel Tools,Mobility
+AI Utility & Resources,AI Resources,Knowledge
+AI Utility & Resources,AI Travel Tools,Travel
+AI Utility & Resources,AI Resources,Religious
+AI Utility & Resources,AI Resources,Resources
+AI Video Tools,AI Video Generation Tools,Animation
+AI Video Tools,AI Video Editing Software,Video Editing
+AI Video Tools,AI Deepfake Technology,Deepfakes
+AI Video Tools,AI Video Generation Tools,Personalized Videos
+AI Video Tools,AI Video Generation Tools,Video Generator
+AI Video Tools,AI Video Generation Tools,Text-to-video
+AI Web Design,AI Web Design Tools,Coding
+AI Web Design,AI UI/UX Tools,UI/UX
+AI Web Design,AI Web Design Tools,Low Code Tools
+AI Web Design,AI UI/UX Tools,Figma
+AI Web Design,AI Web Design Tools,No Code Tools
+AI Web Design,AI UI/UX Tools,Product Management
+AI Web Design,AI Web Design Tools,Code Assistant
+AI Web Design,AI UI/UX Tools,Product Design
+AI Web Design,AI Web Design Tools,Web
+AI Web Design,AI UI/UX Tools,Visualization
+AI Web Design,AI Web Design Tools,Web Scraping
+AI Web Design,AI UI/UX Tools,Avatars
+AI Web Design,AI Web Design Tools,Web Design
+AI Web Design,AI Web Design Tools,Web Forms
+AI Web Design,AI Web Design Tools,Website Builders
+AI Web Design,AI Web Design Tools,Landing Pages
+AI Web Design,AI Web Design Tools,Surveys
+AI Web Design,AI Web Design Tools,Visualization
+AI Web Design,AI Web Design Tools,Avatars

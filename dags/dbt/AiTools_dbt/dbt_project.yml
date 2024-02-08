@@ -32,16 +32,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 
 
-# sources:
-#   - name: raw
-#     description: Extracted data from refrences
-#     tables:
-#       - name: aitoolhunt
-
-
-
-
-
 models:
   AiTools_dbt:
     # Config indicated by + and applies to all files under models/example/

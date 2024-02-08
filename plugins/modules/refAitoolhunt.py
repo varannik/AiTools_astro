@@ -43,11 +43,33 @@ def allAvailableAi(driver, cat, baseUrl):
   url = createCatUrl(baseUrl, cat)
 
   driver.get(url)
-  time.sleep(5)
+
+  # Get scroll height.
+  last_height = driver.execute_script("return document.body.scrollHeight")
+  while True:
+    # Scroll down to the bottom.
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # Calculate new scroll height and compare with last scroll height.
+    new_height = driver.execute_script("return document.body.scrollHeight")
+
+    if new_height == last_height:
+
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight - 1300);")
+        # Wait to load the page.
+        time.sleep(1)
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        print(f"last_height:{last_height}--to-->{new_height}")
+        if new_height == last_height:
+          break
+
+    last_height = new_height
+
   soup = soupParser(driver)
-  allcomps = soup.select_one("div.jsx-94a67d70016076c7.grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3.gap-6.lg\:gap-12.py-1.px-2.justify-center.items-center.text-center")
+  allcomps = soup.select_one("#scrollableDiv > div.infinite-scroll-component__outerdiv > div > div.jsx-94a67d70016076c7.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3.gap-6.lg\\:gap-12.py-1.px-2.justify-center.items-center.text-center")
+
   allAis = allcomps.find_all("div",  class_=re.compile("relative | bg-foreground | shadow-sm | md:shadow-none | lg:p-0 | md:border-[1px] | border-borderColor | mb-3 | rounded-lg "))
 
+  print(len(allAis))
   for i in allAis :
 
     aiUrlTag=  i.find("a", href=True)
