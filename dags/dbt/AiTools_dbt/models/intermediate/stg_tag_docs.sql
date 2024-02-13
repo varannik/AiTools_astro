@@ -22,8 +22,8 @@ with
 ,tht_fea_last as (select *,row_number() over(partition by url_internal order by insert_date desc) rn from tht_f)
 ,tht_nam_last as (select *,row_number() over(partition by url_internal order by insert_date desc) rn from tht_n)
 ,tht_trg_last as (select *,row_number() over(partition by url_ai order by insert_date desc) rn from tht_t)
-,tht_att_last as (select url_internal,description as descrption_s ,row_number() over(partition by url_internal,description  order by insert_date desc) rn  from tht_a)
-,tht_des_last as (select url_internal,descrption  as descrption_l ,row_number() over(partition by url_internal,descrption  order by insert_date desc) rn  from tht_d)
+,tht_att_last as (select url_internal,description as description_s ,row_number() over(partition by url_internal,description  order by insert_date desc) rn  from tht_a)
+,tht_des_last as (select url_internal,description  as description_l ,row_number() over(partition by url_internal,description  order by insert_date desc) rn  from tht_d)
 
 
 ,ath_fea 	as (select * from ath_fea_last where rn = 1)
@@ -39,8 +39,8 @@ with
 
 
 ,tht_fea_j as (select url_stb, usecase 	 	as doc 	from tht_fea join tht_trg using(url_ai))
---,tht_att_j as (select url_stb, descrption_s as doc 	from (select * from tht_att join tht_fea using(url_internal)) join tht_trg using(url_ai))
-,tht_des_j as (select url_stb, descrption_l as doc 	from (select * from tht_des join tht_fea using(url_internal)) join tht_trg using(url_ai))
+--,tht_att_j as (select url_stb, description_s as doc 	from (select * from tht_att join tht_fea using(url_internal)) join tht_trg using(url_ai))
+,tht_des_j as (select url_stb, description_l as doc 	from (select * from tht_des join tht_fea using(url_internal)) join tht_trg using(url_ai))
 ,ath_use_j as (select url_stb, use_cases 	as doc 	from ath_fea join ath_trg using(url_ai))
 ,ath_des_j as (select url_stb, description  as doc 	from ath_fea join ath_trg using(url_ai))
 ,ath_fea_j as (select url_stb, features  	as doc 	from ath_fea join ath_trg using(url_ai))

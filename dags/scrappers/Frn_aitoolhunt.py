@@ -14,16 +14,9 @@ import pandas as pd
 # When using the DAG decorator, The "dag_id" value defaults to the name of the function
 # it is decorating if not explicitly set. In this example, the "dag_id" value would be "example_dag_basic".
 @dag(
-    # This defines how often your DAG will run, or the schedule by which your DAG runs. In this case, this DAG
-    # will run daily
-    # schedule="@daily",
-    # This DAG is set to run for the first time on January 1, 2023. Best practice is to use a static
-    # start_date. Subsequent DAG runs are instantiated based on the schedule
+
     start_date=datetime(2023, 1, 1),
     schedule_interval='0 2 * * *',
-    # When catchup=False, your DAG will only run the latest run that would have been scheduled. In this case, this means
-    # that tasks will not be run between January 1, 2023 and 30 mins ago. When turned on, this DAG's first
-    # run will be for the next 30 mins, per the its schedule
     catchup=False,
     default_args={
         "retries": 2,  # If a task fails, it will retry 2 times.
@@ -84,7 +77,7 @@ def Frn_aitoolhunt():
 
         # Open target site and
         URL_TARGET='https://www.aitoolhunt.com'
-        URL_SELENIUM="http://172.19.0.8:4444/wd/hub"  #chrome-2
+        URL_SELENIUM="http://172.19.0.2:4444/wd/hub"  #chrome-2
 
         driver = createDriver(URL_TARGET, URL_SELENIUM)
 

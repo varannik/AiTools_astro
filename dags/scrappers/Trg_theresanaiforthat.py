@@ -100,7 +100,7 @@ def Trg_theresanaiforthat():
         try :
             # Open target site and
             URL_TARGET='https://www.theresanaiforthat.com'
-            URL_SELENIUM="http://172.19.0.9:4444/wd/hub"  # chrome-1
+            URL_SELENIUM="http://172.19.0.6:4444/wd/hub"  # chrome-1
             driver = createDriver(URL_TARGET, URL_SELENIUM)
             driver.set_page_load_timeout(5)
 

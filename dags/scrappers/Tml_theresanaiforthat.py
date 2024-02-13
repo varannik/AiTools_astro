@@ -74,7 +74,7 @@ def Tml_theresanaiforthat():
 
         # Open target site and
         URL_TARGET='https://theresanaiforthat.com/timeline/'
-        URL_SELENIUM="http://172.19.0.9:4444/wd/hub"
+        URL_SELENIUM="http://172.19.0.6:4444/wd/hub"
 
         driver = createDriver(URL_TARGET, URL_SELENIUM)
 

@@ -107,7 +107,7 @@ def Int_aitoolhunt():
         try :
             # Open target site and
             URL_TARGET='https://www.aitoolhunt.com'
-            URL_SELENIUM="http://172.19.0.8:4444/wd/hub"  # chrome-2
+            URL_SELENIUM="http://172.19.0.2:4444/wd/hub"  # chrome-2
             driver = createDriver(URL_TARGET, URL_SELENIUM)
             driver.set_page_load_timeout(20)
 
