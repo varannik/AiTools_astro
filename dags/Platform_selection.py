@@ -25,7 +25,7 @@ from datetime import timedelta
 )
 
 
-def Int_theresanaiforthat():
+def Platform_selection():
     """
     Extract Data from theresanaiforthat as a refrence
     """
@@ -68,7 +68,7 @@ def Int_theresanaiforthat():
 
                     """
                     url_internal  VARCHAR(255),
-                    description    VARCHAR(3000),
+                    descrption    VARCHAR(3000),
                     insert_date   timestamp
                     """
                     ,
@@ -132,7 +132,7 @@ def Int_theresanaiforthat():
         try:
             # Open target site and
             URL_TARGET='https://theresanaiforthat.com'
-            URL_SELENIUM="http://172.19.0.11:4444/wd/hub" # chrome-1
+            URL_SELENIUM="http://172.19.0.7:4444/wd/hub" # chrome-3
             driver = createDriver(URL_TARGET, URL_SELENIUM, enableCookies=True)
             driver.set_page_load_timeout(20)
 
@@ -267,15 +267,15 @@ def Int_theresanaiforthat():
 
 
     @task()
-    def deleteUnchangedDescription():
-        '''Delete new duplicated rows without any changes in descriptions'''
+    def deleteUnchangedDescrption():
+        '''Delete new duplicated rows without any changes in descrptions'''
         from modules.dbExecute import exeSql
 
         command = 'Delete duplicated rows in ref_theresanaiforthat_description'
         sql =   """
                 WITH dec AS (
                 SELECT *,RANK() OVER(PARTITION BY url_internal,
-                                                description   Order by insert_date) rn
+                                                descrption   Order by insert_date) rn
                 FROM "DW_RAW".ref_theresanaiforthat_description
                 )
 
@@ -335,11 +335,11 @@ def Int_theresanaiforthat():
     newF = extractFullfeatures(ais)
     dp = deleteUnchangedProperties()
     da = deleteUnchangedAttributes()
-    dd = deleteUnchangedDescription()
+    dd = deleteUnchangedDescrption()
     dj = deleteUnchangedImpactedJobs()
     cd = cleanTempDb()
 
     init>>ais>>newF>>[dp,da,dd,dj]>>cd
 
-Int_theresanaiforthat()
+Platform_selection()
 

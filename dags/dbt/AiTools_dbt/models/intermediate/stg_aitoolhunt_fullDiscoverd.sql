@@ -3,7 +3,6 @@
 )}}
 
 
-
 with
 
 int_ as (select * from {{source ('aitoolhunt', 'ref_aitoolhunt_features')}}),

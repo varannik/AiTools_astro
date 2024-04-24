@@ -18,4 +18,14 @@ sources:
       - name: ref_theresanaiforthat_attributes
       - name: ref_theresanaiforthat_description
 
+  - name: api
+    database: aitools
+    schema: DW_API
+    tables:
+      - name: core_platforms
+      - name: core_cmst
+      - name: core_pricingoptions
+
+
+
 

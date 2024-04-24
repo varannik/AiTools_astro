@@ -1,17 +1,43 @@
 
 seeds:
-  - name: tags
-    description: defined tags and their related carrier and subcategories
+
+  - name: core_platforms
+    description: defined platforms from main domains
     docs:
       show: true
     config:
       enabled: true
-      schema: RAW
+      schema: API
 
     columns:
+      - name: base_domain
+      - name: sep
+      - name: platform
+
+  - name: core_cmst
+    description: defined relations between Careers, Main, Sub and Tags 
+    docs:
+      show: true
+    config:
+      enabled: true
+      schema: API
+
+    columns:
+      - name: careers
       - name: main_categories
       - name: sub_categories
       - name: tag
+
+  - name: core_pricingoptions
+    description: Pricing Options
+    docs:
+      show: true
+    config:
+      enabled: true
+      schema: API
+
+    columns:
+      - name: option
 
 
 

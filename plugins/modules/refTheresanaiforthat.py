@@ -1,6 +1,7 @@
 """
 Modules inside extraction data from Theresanaiforthat
 """
+import time
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import pandas as pd
@@ -106,26 +107,53 @@ def fullAis(driver):
 
     return df_tasks
 
+
+
+
+def findTasks(soup): 
+    '''Find all tasks in one page'''
+    try:
+      taskList = []
+      al = soup.select_one("#main > div.desk_row > div.data_cont.request-fade-in-top > div.li_cont > ul")
+      al = al.find_all('a')
+      for a in al:
+          li = a['href']
+          taskList.append(li)
+
+      print(f"{len(taskList)} tasks found")
+      return taskList
+
+    except:
+        return []
+        print('Thare is no task')
+
 #----------------- All tasks
 
 def findAllTasks(driver):
     '''Find all tasks exist in TheresAnAIForThat'''
     # Parse the HTML using Beautiful Soup
-    soup = soupParser(driver)
 
-    try:
-        taskList = []
-        al = soup.select_one("#main > div.desk_row > div.data_cont.request-fade-in-top > div.li_cont > ul")
-        al = al.find_all('a')
-        for a in al:
-            li = a['href']
-            taskList.append(li)
+    allTasks = []
+    i = 1
+    CountFoundedTasks = 100 # while first page start with 100 tasks, and for passing validation of first round of the loop
+    while CountFoundedTasks > 0 : 
+      soup = soupParser(driver)
+      pageTasks = findTasks(soup)
+      CountFoundedTasks = len(pageTasks)
+      allTasks.extend(pageTasks)
 
-        print(f"{len(taskList)} tasks found")
-        return taskList
+      # Go to next page
+      i+=1
+      URL = f'https://theresanaiforthat.com/tasks/page/{i}/'
+      print(URL)
+      print(f'Founded tasks = {len(allTasks)}')
 
-    except:
-        print('Thare is no task')
+      driver.get(URL)
+      time.sleep(1)
+
+      
+      
+    return allTasks
 
 
 def cleanStr(str):
@@ -299,7 +327,8 @@ def extdesc(soup, url_internal):
     '''Extract description'''
 
     try:
-      des = pd.DataFrame(columns=['url_internal', 'descrption'])
+      des = pd.DataFrame(columns=['url_internal', 'description'])
+                                                  
       ds = soup.select_one("#data_cont > div.rright > div > div.description")
       ds = ds.find_all("p")
       for d in ds:
@@ -307,7 +336,7 @@ def extdesc(soup, url_internal):
 
         det.update({
                   'url_internal':url_internal,
-                  'descrption'  : d.text
+                  'description'  : d.text
                   })
         det =  pd.DataFrame(det, index=[0])
         des  = pd.concat([des, det], ignore_index = True, axis = 0)

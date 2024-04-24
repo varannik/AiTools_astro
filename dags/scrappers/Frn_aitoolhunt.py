@@ -77,7 +77,7 @@ def Frn_aitoolhunt():
 
         # Open target site and
         URL_TARGET='https://www.aitoolhunt.com'
-        URL_SELENIUM="http://172.19.0.2:4444/wd/hub"  #chrome-2
+        URL_SELENIUM="http://172.19.0.12:4444/wd/hub"  #chrome-2
 
         driver = createDriver(URL_TARGET, URL_SELENIUM)
 

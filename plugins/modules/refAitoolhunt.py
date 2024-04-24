@@ -129,7 +129,7 @@ def pureURL(soup):
   try:
     url = soup.select_one("div.bg-foreground.rounded-lg > div.md\\:flex > div.basis-\\[46\\%\\].px-4.md\\:pr-6.py-3.pt-5.pb-8.rounded-lg.min-h-\\[410px\\] > div.flex > a")
     url = url['href']
-    pureURL = urlparse(url).netloc
+    pureURL = url
   except:
      print("Url not found")
      return None

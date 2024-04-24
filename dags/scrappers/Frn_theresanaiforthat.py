@@ -77,9 +77,11 @@ def Frn_theresanaiforthat():
         from modules.driver import createDriver
         from modules.dbExecute import fetchData, insertData
 
+
+
         # Open target site and
         URL_TARGET='https://theresanaiforthat.com/tasks/'
-        URL_SELENIUM="http://172.19.0.6:4444/wd/hub" # chrome-1
+        URL_SELENIUM="http://172.19.0.11:4444/wd/hub" # chrome-1
 
         driver = createDriver(URL_TARGET, URL_SELENIUM, enableCookies=True)
 

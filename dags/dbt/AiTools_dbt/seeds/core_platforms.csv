@@ -1,0 +1,11 @@
+﻿base_domain,sep,platform
+https://apps.apple.com/,?,IOS
+https://github.com/,?,GITHUB
+.github.io/,?,GITHUB.IO
+https://huggingface.co/,?,HUGGINGFACE
+https://chat.openai.com/,?,CHATGPTS
+https://chrome.google.com/,?,CHROME
+https://play.google.com/,&,ANDROID
+https://t.me/,?,TELEGRAM
+https://workspace.google.com/,?,GOOGLEWORKSPACE
+https://aws.amazon.com/,?,AMAZON

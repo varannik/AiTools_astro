@@ -100,7 +100,7 @@ def takeScreenShot(driver, name):
 
   SC_PATH = f'{os.getcwd()}/screenshots/{name}_scr.png'
   namePath = f"{name}_scr.png"
-  driver.save_screenshot(SC_PATH)
+  # driver.save_screenshot(SC_PATH)
 
   return namePath
 

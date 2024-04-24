@@ -77,6 +77,9 @@ def Trg_aitoolhunt():
         from modules.dbExecute import fetchData
 
         result = fetchData(tableName='"DW_RAW"."ref_aitoolhunt_features"', columns =['url_ai'])
+        print(f"{len(result)} last existing Ais with duplicates")
+        result = result.drop_duplicates(subset=['url_ai'], keep='first')
+        print(f"{len(result)} last existing Ais unique" )
 
         return result
 
@@ -101,9 +104,9 @@ def Trg_aitoolhunt():
 
 
         try :
-            # Open target site and
+            # Open target site 
             URL_TARGET='https://www.aitoolhunt.com'
-            URL_SELENIUM="http://172.19.0.2:4444/wd/hub"  # chrome-2
+            URL_SELENIUM="http://172.19.0.12:4444/wd/hub"  # chrome-2
             driver = createDriver(URL_TARGET, URL_SELENIUM)
             driver.set_page_load_timeout(5)
 
